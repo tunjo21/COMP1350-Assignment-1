@@ -1,16 +1,30 @@
 -- Question-A
--- Table Creation (Incomplete and Erroneous - please fix the errors and complete this section)
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS Review;
+DROP TABLE IF EXISTS Discount;
+DROP TABLE IF EXISTS Chocolate;w
+DROP TABLE IF EXISTS Customer;
+DROP TABLE IF EXISTS Category;
+DROP TABLE IF EXISTS Promotion;
+
+SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE Promotion (
 	PromoID CHAR(3) NOT NULL,
 	PromoName VARCHAR(50) NOT NULL,
-	PromoDiscount DECIMAL(4,1) NOT NULL
+	PromoDiscount DECIMAL(4,1) NOT NULL,
+
+	PRIMARY KEY (PromoID) 
 );
 
 CREATE TABLE Category (
 	CategoryID CHAR(5) NOT NULL,
 	CategoryName VARCHAR(50) NOT NULL,
-	CategoryDesc VARCHAR(200) NOT NULL
+	CategoryDesc VARCHAR(200) NOT NULL,
+    
+    PRIMARY KEY (CategoryID)
 );
 
 CREATE TABLE Chocolate (
@@ -18,8 +32,11 @@ CREATE TABLE Chocolate (
 	ChocolateName VARCHAR(50) NOT NULL,
 	ChocolateDesc VARCHAR(200) NOT NULL,
 	ChocolatePrice DECIMAL (5, 2) NOT NULL,
-	ChocolateWeight INT NOT NULL,
-	CategoryID INT NOT NULL
+	ChocolateWeight INTEGER NOT NULL,
+	CategoryID CHAR(5) NOT NULL,
+    
+    PRIMARY KEY (ChocolateID),
+    FOREIGN KEY (CategoryID) REFERENCES Category(CategoryID)
 );
 
 CREATE TABLE Discount (
@@ -27,14 +44,21 @@ CREATE TABLE Discount (
 	ChocolateID CHAR(6) NOT NULL,
 	StartDate DATETIME NOT NULL,
 	EndDate DATETIME NOT NULL,
-	-- PRIMARY KEY (PromotionID
+    
+	PRIMARY KEY (PromotionID, ChocolateID),
+    FOREIGN KEY (PromotionID) REFERENCES Promotion(PromoID),
+    FOREIGN KEY (ChocolateID) REFERENCES Chocolate(ChocolateID)
+
 );
 
+
 CREATE TABLE Customer (
-	CustomerID CHAR(6) NOT NULL,
-	CustonerName VARCHAR(70) NOT NULL,
+	CustomerID CHAR(7) NOT NULL,
+	CustomerName VARCHAR(70) NOT NULL,
 	CustomerEmail VARCHAR(100) NOT NULL,
-	CustomerPhNum VARCHAR(32) NOT NULL
+	CustomerPhNum VARCHAR(32) NOT NULL,
+    
+	PRIMARY KEY (CustomerID)
 );
 
 CREATE TABLE Review (
@@ -43,7 +67,11 @@ CREATE TABLE Review (
 	ReviewComment VARCHAR(255) NOT NULL,
 	ReviewDate DATETIME NOT NULL,
 	CustomerID CHAR(6) NULL,
-	ChocolateID CHAR(6) NOT NULL
+	ChocolateID CHAR(6) NOT NULL,
+    
+    PRIMARY KEY (ReviewID),
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
+    FOREIGN KEY (ChocolateID) REFERENCES Chocolate(ChocolateID)
 );
 -- Once successfully implemented, these insert statements should work.
 
@@ -67,34 +95,92 @@ INSERT INTO Review VALUES
 
 -- Please ensure you INSERT atleast 5 records for every table and add it below
 
+INSERT INTO Promotion VALUES
+('P02', "Dark Chocolate Sale", 40.0),
+('P03', "White Chocolate Sale", 30.0),
+('P04', "Spicy Chocolate", 90.0),
+('P05', "Cat Chocolate Sale", 70.0),
+('P06', "Boogie Sale", 20.0);
+
+INSERT INTO Category VALUES
+('CAT02', "Manila Beans", "Cocoa beans from sources in Manila"),
+('CAT03', "Cat Beans", "Beans made by cats not from cats"),
+('CAT04', "Australian Beans", "Cocoa beans from a Perth and Sydney"),
+('CAT05', "Alien Beans", "Beans from Mars"),
+('CAT06', "Spicy Cheeto Beans", "Spicy hot beans from a volcano");
+
+INSERT INTO Chocolate VALUES
+('CHOC14', "Manila Chocolate Tablet", "Medium sized chocolate", 18.99, 85, 'CAT02'),
+('CHOC15', "Cat Chocolate Tablet", "Chocolate shaped Cats", 400.99, 90, 'CAT03'),
+('CHOC16', "Australian Chocolate Tablet", "Homegrown chocolate ", 12.99, 70, 'CAT04'),
+('CHOC17', "Alien Chocolate Tablet", "Tablets that are out of this world", 97.99, 100, 'CAT05'),
+('CHOC18', "Spicy Cheeto Chocolate Tablet", "Shaped like cheetos", 117.99, 90, 'CAT06');
+
+INSERT INTO Discount VALUES
+('P02', 'CHOC14', '2023-02-01 08:00:00', '2023-02-02 18:00:00'),
+('P03', 'CHOC15', '2023-02-01 08:00:00', '2023-02-02 18:00:00'),
+('P04', 'CHOC16', '2023-02-01 08:00:00', '2023-02-02 18:00:00'),
+('P05', 'CHOC17', '2023-02-01 08:00:00', '2023-02-02 18:00:00'),
+('P06', 'CHOC18', '2023-02-01 08:00:00', '2023-02-02 18:00:00');
+
+INSERT INTO Customer VALUES
+
+('CUS146', "Mae Mosqueda", "mae.m.snow@notreal.com",  "90861924"),
+('CUS147', "Sophie Tran", "sophie.t.snow@notreal.com",  "90861925"),
+('CUS148', "Tasmia Tunjomony", "tasmia.t.snow@notreal.com",  "90861926"),
+('CUS149', "Sumi Aitken", "sumi.a.snow@notreal.com",  "90861927"),
+('CUS150', "Jeon Ryan", "in3d@notreal.com",  "7777777");
 
 
-
-
+INSERT INTO Review VALUES
+('REV134', 4, "Way too spicy for my taste", '2023-02-02 13:22:54', 'CUS147','CHOC18'),
+('REV135', 10, "Makes me wanna meow, meow.", '2023-02-02 13:22:54', 'CUS150','CHOC15'),
+('REV136', 7, "Makes me wanna purr, rowr", '2023-02-02 13:22:54', 'CUS146','CHOC15'),
+('REV137', 8, "Yummy chocolate from beyond", '2023-02-02 13:22:54', 'CUS148','CHOC17'),
+('REV138', 10, "This tates great I would buy 500 more if I could", '2023-02-02 13:22:54', 'CUS149','CHOC14');
 
 
 -- Question-B
-/* Explain in simple words what each query does and make sure you comment it
- */
 
--- An example of an answer to a Query
+-- Query 1: A query that asks for the details of a customer named Sophie Tran 
+select * 
+from Customer 
+where CustomerName = 'Sophie Tran'
+;
 
-/* This query prints the names of all chocolates */
+-- Query 2: A query that asks for information on Spicy Cheeto Beans with a Category description starting with spicy 
 
-Select ChocolateName
-from Chocolate;
+select * 
+from Category
+where CategoryName = 'Spicy Cheeto Beans' and CategoryDesc LIKE 'Spicy%'
+;
 
--- Query 1: A query involving a single table with one condition. Insert your answer below
+-- Query 3: A query using join that asks for the chocolate name, category name, and category description 
+
+select ch.ChocolateName, c.CategoryName, c.CategoryDesc
+from Category c
+join Chocolate ch
+on ch.CategoryID = c.CategoryID
+order by c.CategoryName DESC
+;
+
+-- Query 4: A query asking for the average rating of Cat Chocolate
+
+select avg(ReviewRating) as 'Average Cat Chocolate Rating'
+from Review
+group by ChocolateID
+having ChocolateID = 'CHOC15'
+;
 
 
 
--- Query 2: A query involving a single table with two conditions, with one of the conditions that uses a wild card operator. Insert your answer below
+
+	
 
 
 
--- Query 3: A query involving a join between at least two tables with an order by clause. Insert your answer below
 
 
 
--- Query 4: A query involving a single table with an aggregate and group by function. Insert your answer below
+
 
